@@ -1,0 +1,728 @@
+ProyectoNinja
+├── src
+│   ├── modelo
+│   │   ├── Ninja.java
+│   │   ├── Mision.java
+│   │   ├── Habilidad.java
+│   │   ├── NinjaBuilder.java
+│   │   ├── MisionBuilder.java
+│   │   ├── HabilidadBuilder.java
+│   │   ├── ConexionBD.java
+│   │   ├── NinjaDAO.java
+│   │   ├── MisionDAO.java
+│   │   ├── HabilidadDAO.java
+│   │   └── ArchivoTexto.java
+│   ├── vista
+│   │   └── InterfazGrafica.java
+│   └── controlador
+│       └── Controlador.java
+└── lib
+    └── mysql-connector-java-8.0.23.jar
+
+//Clase NinjaBuilder
+public class NinjaBuilder {
+
+  //Atributos del ninja
+  private int id;
+  private String nombre;
+  private String rango;
+  private int edad;
+  private List<String> habilidades;
+
+  //Constructor vacío
+  public NinjaBuilder () {
+    this.id = 0;
+    this.nombre = "";
+    this.rango = "";
+    this.edad = 0;
+    this.habilidades = new ArrayList<String> ();
+  }
+
+  //Métodos para asignar los atributos
+  public NinjaBuilder setId (int id) {
+    this.id = id;
+    return this;
+  }
+
+  public NinjaBuilder setNombre (String nombre) {
+    this.nombre = nombre;
+    return this;
+  }
+
+  public NinjaBuilder setRango (String rango) {
+    this.rango = rango;
+    return this;
+  }
+
+  public NinjaBuilder setEdad (int edad) {
+    this.edad = edad;
+    return this;
+  }
+
+  public NinjaBuilder setHabilidades (List<String> habilidades) {
+    this.habilidades = habilidades;
+    return this;
+  }
+
+  //Método para construir el objeto ninja
+  public Ninja build () {
+    return new Ninja (this.id, this.nombre, this.rango, this.edad, this.habilidades);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//Clase MisionBuilder
+public class MisionBuilder {
+
+  //Atributos de la misión
+  private int id;
+  private int ninjaId;
+  private Date fechaInicio;
+  private Date fechaFin;
+  private String descripcion;
+
+  //Constructor vacío
+  public MisionBuilder () {
+    this.id = 0;
+    this.ninjaId = 0;
+    this.fechaInicio = null;
+    this.fechaFin = null;
+    this.descripcion = "";
+  }
+
+  //Métodos para asignar los atributos
+  public MisionBuilder setId (int id) {
+    this.id = id;
+    return this;
+  }
+
+  public MisionBuilder setNinjaId (int ninjaId) {
+    this.ninjaId = ninjaId;
+    return this;
+  }
+
+  public MisionBuilder setFechaInicio (Date fechaInicio) {
+    this.fechaInicio = fechaInicio;
+    return this;
+  }
+
+  public MisionBuilder setFechaFin (Date fechaFin) {
+    this.fechaFin = fechaFin;
+    return this;
+  }
+
+  public MisionBuilder setDescripcion (String descripcion) {
+    this.descripcion = descripcion;
+    return this;
+  }
+
+  //Método para construir el objeto misión
+  public Mision build () {
+    return new Mision (this.id, this.ninjaId, this.fechaInicio, this.fechaFin, this.descripcion);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//Clase HabilidadBuilder
+public class HabilidadBuilder {
+
+  //Atributos de la habilidad
+  private int id;
+  private int ninjaId;
+  private String nombre;
+  private String descripcion;
+
+  //Constructor vacío
+  public HabilidadBuilder () {
+    this.id = 0;
+    this.ninjaId = 0;
+    this.nombre = "";
+    this.descripcion = "";
+  }
+
+  //Métodos para asignar los atributos
+  public HabilidadBuilder setId (int id) {
+    this.id = id;
+    return this;
+  }
+
+  public HabilidadBuilder setNinjaId (int ninjaId) {
+    this.ninjaId = ninjaId;
+    return this;
+  }
+
+  public HabilidadBuilder setNombre (String nombre) {
+    this.nombre = nombre;
+    return this;
+  }
+
+  public HabilidadBuilder setDescripcion (String descripcion) {
+    this.descripcion = descripcion;
+    return this;
+  }
+
+  //Método para construir el objeto habilidad
+  public Habilidad build () {
+    return new Habilidad (this.id, this.ninjaId, this.nombre, this.descripcion);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//Clase ConexionBD
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class ConexionBD {
+
+  //Atributos de la conexión
+  private static final String URL = "jdbc:mysql://localhost:3306/proyectoninja";
+  private static final String USER = "root";
+  private static final String PASSWORD = "1234";
+  private static Connection conexion = null;
+
+  //Método para obtener la conexión
+  public static Connection getConexion () {
+    try {
+      if (conexion == null) {
+        conexion = DriverManager.getConnection (URL, USER, PASSWORD);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace ();
+    }
+    return conexion;
+  }
+
+  //Método para cerrar la conexión
+  public static void cerrarConexion () {
+    try {
+      if (conexion != null) {
+        conexion.close ();
+      }
+    } catch (SQLException e) {
+      e.printStackTrace ();
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//Clase ArchivoTexto
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class ArchivoTexto {
+
+  //Atributo del archivo
+  private static final String RUTA = "proyectoninja.txt";
+
+  //Método para escribir en el archivo
+  public static void escribir (String texto) {
+    File archivo = new File (RUTA);
+    BufferedWriter bw = null;
+    try {
+      bw = new BufferedWriter (new FileWriter (archivo, true));
+      bw.write (texto + "\n");
+    } catch (IOException e) {
+      e.printStackTrace ();
+    } finally {
+      try {
+        if (bw != null) {
+          bw.close ();
+        }
+      } catch (IOException e) {
+        e.printStackTrace ();
+      }
+    }
+  }
+
+  //Método para leer el archivo
+  public static String leer () {
+    File archivo = new File (RUTA);
+    BufferedReader br = null;
+    StringBuilder sb = new StringBuilder ();
+    try {
+      br = new BufferedReader (new FileReader (archivo));
+      String linea = null;
+      while ((linea = br.readLine ()) != null) {
+        sb.append (linea + "\n");
+      }
+    } catch (IOException e) {
+      e.printStackTrace ();
+    } finally {
+      try {
+        if (br != null) {
+          br.close ();
+        }
+      } catch (IOException e) {
+        e.printStackTrace ();
+      }
+    }
+    return sb.toString ();
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//Clase NinjaDAO
+public class NinjaDAO {
+
+  //Método para crear un ninja
+  public void crearNinja (Ninja ninja) {
+    Connection conexion = ConexionBD.getConexion ();
+    PreparedStatement ps = null;
+    String sql = "INSERT INTO ninja (id, nombre, rango, edad) VALUES (?, ?, ?, ?)";
+    try {
+      ps = conexion.prepareStatement (sql);
+      ps.setInt (1, ninja.getId ());
+      ps.setString (2, ninja.getNombre ());
+      ps.setString (3, ninja.getRango ());
+      ps.setInt (4, ninja.getEdad ());
+      ps.executeUpdate ();
+    } catch (SQLException e) {
+      e.printStackTrace ();
+    } finally {
+      try {
+        if (ps != null) {
+          ps.close ();
+        }
+      } catch (SQLException e) {
+        e.printStackTrace ();
+      }
+    }
+  }
+
+  //Método para leer un ninja por id
+  public Ninja leerNinja (int id) {
+    Connection conexion = ConexionBD.getConexion ();
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+    Ninja ninja = null;
+    String sql = "SELECT * FROM ninja WHERE id = ?";
+    try {
+      ps = conexion.prepareStatement (sql);
+      ps.setInt (1, id);
+      rs = ps.executeQuery ();
+      if (rs.next ()) {
+        ninja = new NinjaBuilder ()
+          .setId (rs.getInt ("id"))
+          .setNombre (rs.getString ("nombre"))
+          .setRango (rs.getString ("rango"))
+          .setEdad (rs.getInt ("edad"))
+          .build ();
+      }
+    } catch (SQLException e) {
+      e.printStackTrace ();
+    } finally {
+      try {
+        if (rs != null) {
+          rs.close ();
+        }
+        if (ps != null) {
+          ps.close ();
+        }
+      } catch (SQLException e) {
+        e.printStackTrace ();
+      }
+    }
+    return ninja;
+  }
+
+  //Método para actualizar un ninja
+  public void actualizarNinja (Ninja ninja) {
+    Connection conexion = ConexionBD.getConexion ();
+    PreparedStatement ps = null;
+    String sql = "UPDATE ninja SET nombre = ?, rango = ?, edad = ? WHERE id = ?";
+    try {
+      ps = conexion.prepareStatement (sql);
+      ps.setString (1, ninja.getNombre ());
+      ps.setString (2, ninja.getRango ());
+      ps.setInt (3, ninja.getEdad ());
+      ps.setInt (4, ninja.getId ());
+      ps.executeUpdate ();
+    } catch (SQLException e) {
+      e.printStackTrace ();
+    } finally {
+      try {
+        if (ps != null) {
+          ps.close ();
+        }
+      } catch (SQLException e) {
+        e.printStackTrace ();
+      }
+    }
+  }
+
+  //Método para borrar un ninja
+  public void borrarNinja (int id) {
+    Connection conexion = ConexionBD.getConexion ();
+    PreparedStatement ps = null;
+    String sql = "DELETE FROM ninja WHERE id = ?";
+    try {
+      ps = conexion.prepareStatement (sql);
+      ps.setInt (1, id);
+      ps.executeUpdate ();
+    } catch (SQLException e) {
+      e.printStackTrace ();
+    } finally {
+      try {
+        if (ps != null) {
+          ps.close ();
+        }
+      } catch (SQLException e) {
+        e.printStackTrace ();
+      }
+    }
+  }
+}
+
+//Clase MisionDAO
+public class MisionDAO {
+
+  //Método para crear una misión
+  public void crearMision (Mision mision) {
+    Connection conexion = ConexionBD.getConexion ();
+    PreparedStatement ps = null;
+    String sql = "INSERT INTO mision (id, ninja_id, fecha_inicio, fecha_fin, descripcion) VALUES (?, ?, ?, ?, ?)";
+    try {
+      ps = conexion.prepareStatement (sql);
+      ps.setInt (1, mision.getId ());
+      ps.setInt (2, mision.getNinjaId ());
+      ps.setDate (3, new java.sql.Date (mision.getFechaInicio ().getTime ()));
+      ps.setDate (4, new java.sql.Date (mision.getFechaFin ().getTime ()));
+      ps.setString (5, mision.getDescripcion ());
+      ps.executeUpdate ();
+    } catch (SQLException e) {
+      e.printStackTrace ();
+    } finally {
+      try {
+        if (ps != null) {
+          ps.close ();
+        }
+      } catch (SQLException e) {
+        e.printStackTrace ();
+      }
+    }
+  }
+
+  //Método para leer una misión por id
+  public Mision leerMision (int id) {
+    Connection conexion = ConexionBD.getConexion ();
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+    Mision mision = null;
+    String sql = "SELECT * FROM mision WHERE id = ?";
+    try {
+      ps = conexion.prepareStatement (sql);
+      ps.setInt (1, id);
+      rs = ps.executeQuery ();
+      if (rs.next ()) {
+        mision = new MisionBuilder ()
+          .setId (rs.getInt ("id"))
+          .setNinjaId (rs.getInt ("ninja_id"))
+          .setFechaInicio (rs.getDate ("fecha_inicio"))
+          .setFechaFin (rs.getDate ("fecha_fin"))
+          .setDescripcion (rs.getString ("descripcion"))
+          .build ();
+      }
+    } catch (SQLException e) {
+      e.printStackTrace ();
+    } finally {
+      try {
+        if (rs != null) {
+          rs.close ();
+        }
+        if (ps != null) {
+          ps.close ();
+        }
+      } catch (SQLException e) {
+        e.printStackTrace ();
+      }
+    }
+    return mision;
+  }
+
+  //Método para actualizar una misión
+  public void actualizarMision (Mision mision) {
+    Connection conexion = ConexionBD.getConexion ();
+    PreparedStatement ps = null;
+    String sql = "UPDATE mision SET ninja_id = ?, fecha_inicio = ?, fecha_fin = ?, descripcion = ? WHERE id = ?";
+    try {
+      ps = conexion.prepareStatement (sql);
+      ps.setInt (1, mision.getNinjaId ());
+      ps.setDate (2, new java.sql.Date (mision.getFechaInicio ().getTime ()));
+      ps.setDate (3, new java.sql.Date (mision.getFechaFin ().getTime ()));
+      ps.setString (4, mision.getDescripcion ());
+      ps.setInt (5, mision.getId ());
+      ps.executeUpdate ();
+    } catch (SQLException e) {
+      e.printStackTrace ();
+    } finally {
+      try {
+        if (ps != null) {
+          ps.close ();
+        }
+      } catch (SQLException e) {
+        e.printStackTrace ();
+      }
+    }
+  }
+
+  //Método para borrar una misión
+  public void borrarMision (int id) {
+    Connection conexion = ConexionBD.getConexion ();
+    PreparedStatement ps = null;
+    String sql = "DELETE FROM mision WHERE id = ?";
+    try {
+      ps = conexion.prepareStatement (sql);
+      ps.setInt (1, id);
+      ps.executeUpdate ();
+    } catch (SQLException e) {
+      e.printStackTrace ();
+    } finally {
+      try {
+        if (ps != null) {
+          ps.close ();
+        }
+      } catch (SQLException e) {
+        e.printStackTrace ();
+      }
+    }
+  }
+}
+
+//Clase HabilidadDAO
+public class HabilidadDAO {
+
+  //Método para crear una habilidad
+  public void crearHabilidad (Habilidad habilidad) {
+    Connection conexion = ConexionBD.getConexion ();
+    PreparedStatement ps = null;
+    String sql = "INSERT INTO habilidad (id, ninja_id, nombre, descripcion) VALUES (?, ?, ?, ?)";
+    try {
+      ps = conexion.prepareStatement (sql);
+      ps.setInt (1, habilidad.getId ());
+      ps.setInt (2, habilidad.getNinjaId ());
+      ps.setString (3, habilidad.getNombre ());
+      ps.setString (4, habilidad.getDescripcion ());
+      ps.executeUpdate ();
+    } catch (SQLException e) {
+      e.printStackTrace ();
+    } finally {
+      try {
+        if (ps != null) {
+          ps.close ();
+        }
+      } catch (SQLException e) {
+        e.printStackTrace ();
+      }
+    }
+  }
+
+  //Método para leer una habilidad por id
+  public Habilidad leerHabilidad (int id) {
+    Connection conexion = ConexionBD.getConexion ();
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+    Habilidad habilidad = null;
+    String sql = "SELECT * FROM habilidad WHERE id = ?";
+    try {
+      ps = conexion.prepareStatement (sql);
+      ps.setInt (1, id);
+      rs = ps.executeQuery ();
+      if (rs.next ()) {
+        habilidad = new HabilidadBuilder ()
+          .setId (rs.getInt ("id"))
+          .setNinjaId (rs.getInt ("ninja_id"))
+          .setNombre (rs.getString ("nombre"))
+          .setDescripcion (rs.getString ("descripcion"))
+          .build ();
+      }
+    } catch (SQLException e) {
+      e.printStackTrace ();
+    } finally {
+      try {
+        if (rs != null) {
+          rs.close ();
+        }
+        if (ps != null) {
+          ps.close ();
+        }
+      } catch (SQLException e) {
+        e.printStackTrace ();
+      }
+    }
+    return habilidad;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//Clase Main
+import java.util.Scanner;
+
+public class Main {
+
+  //Atributo del controlador
+  private static Controlador controlador;
+
+  //Método principal
+  public static void main (String[] args) {
+    //Crear el controlador
+    controlador = new Controlador ();
+    //Mostrar el menú principal
+    mostrarMenuPrincipal ();
+  }
+
+  //Método para mostrar el menú principal
+  public static void mostrarMenuPrincipal () {
+    //Crear el scanner para leer la entrada del usuario
+    Scanner scanner = new Scanner (System.in);
+    //Mostrar las opciones del menú
+    System.out.println ("Bienvenido a la aplicación de los ninjas");
+    System.out.println ("Seleccione una opción:");
+    System.out.println ("1. Gestionar ninjas");
+    System.out.println ("2. Gestionar misiones");
+    System.out.println ("3. Gestionar habilidades");
+    System.out.println ("4. Salir");
+    //Leer la opción del usuario
+    int opcion = scanner.nextInt ();
+    //Ejecutar la acción correspondiente a la opción
+    switch (opcion) {
+      case 1:
+        //Llamar al método del controlador para mostrar la vista de ninjas
+        controlador.mostrarVistaNinja ();
+        break;
+      case 2:
+        //Llamar al método del controlador para mostrar la vista de misiones
+        controlador.mostrarVistaMision ();
+        break;
+      case 3:
+        //Llamar al método del controlador para mostrar la vista de habilidades
+        controlador.mostrarVistaHabilidad ();
+        break;
+      case 4:
+        //Llamar al método del controlador para salir de la aplicación
+        controlador.salir ();
+        break;
+      default:
+        //Mostrar un mensaje de error y volver a mostrar el menú principal
+        System.out.println ("Opción inválida. Intente de nuevo.");
+        mostrarMenuPrincipal ();
+        break;
+    }
+  }
+}
+
+
