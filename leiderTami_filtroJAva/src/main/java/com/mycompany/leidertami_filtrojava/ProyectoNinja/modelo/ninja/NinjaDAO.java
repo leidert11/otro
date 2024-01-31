@@ -13,41 +13,43 @@ import java.util.List;
 public class NinjaDAO {
   private List<Ninja> ninjas;
   private List<MisionNinja> misionesNinja; 
-     private List<Mision> misiones; 
+    private List<Mision> misiones; 
 
-     public NinjaDAO() {
+    public NinjaDAO() {
       ninjas = new ArrayList<>();
       misiones = new ArrayList<>();
   }
-     public void crearNinja(Ninja ninja) {
-      Connection conexion = ConexionBD.getConexion();
-      PreparedStatement ps = null;
-      String sql = "INSERT INTO ninja (nombre, rango, aldea) VALUES (?, ?, ?)";
+  public void crearNinja(Ninja ninja) {
+    Connection conexion = ConexionBD.getConexion();
+    PreparedStatement ps = null;
+    String sql = "INSERT INTO ninja (id, nombre, rango, aldea) VALUES (?, ?, ?, ?)";
+    
+    try {
+      ps = conexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+      ps.setInt(1, ninja.getId());
+      ps.setString(2, ninja.getNombre());
+      ps.setString(3, String.valueOf(ninja.getRango()));
+      ps.setString(4, ninja.getAldea());
+      ps.executeUpdate();
       
-      try {
-        ps = conexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-        ps.setString(1, ninja.getNombre());
-        ps.setString(2, String.valueOf(ninja.getRango()));
-        ps.setString(3, ninja.getAldea());
-        ps.executeUpdate();
-        
-          ResultSet rs = ps.getGeneratedKeys();
-          if (rs.next()) {
-              int idGenerado = rs.getInt(1);
-              ninja.setId(idGenerado);
-          }
-      } catch (SQLException e) {
-          e.printStackTrace();
-      } finally {
-          try {
-              if (ps != null) {
-                  ps.close();
-              }
-          } catch (SQLException e) {
-              e.printStackTrace();
-          }
-      }
+        ResultSet rs = ps.getGeneratedKeys();
+        if (rs.next()) {
+            int idGenerado = rs.getInt(1);
+            ninja.setId(idGenerado);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    } finally {
+        try {
+            if (ps != null) {
+                ps.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
   }
+  
   
   
   
@@ -134,78 +136,30 @@ public class NinjaDAO {
 
     public Ninja obtenerNinjaPorId(int id) {
       Ninja ninja = null;
+      Connection conexion = ConexionBD.getConexion();
+      PreparedStatement ps = null;
+      ResultSet rs = null;
       String sql = "SELECT * FROM ninja WHERE id = ?";
   
-      try (Connection conexion = ConexionBD.getConexion();
-           PreparedStatement statement = conexion.prepareStatement(sql)) {
-          statement.setInt(1, id);
+      try {
+          ps = conexion.prepareStatement(sql);
+          ps.setInt(1, id);
+          rs = ps.executeQuery();
   
-          try (ResultSet resultSet = statement.executeQuery()) {
-              if (resultSet.next()) {
-                  int idNinja = resultSet.getInt("id");
-                  String nombre = resultSet.getString("nombre");
-                  RangoNinja rango = RangoNinja.valueOf(resultSet.getString("rango"));
-                  String aldea = resultSet.getString("aldea");
-  
-                  ninja = new Ninja(idNinja, nombre, rango, aldea);
-              }
+          if (rs.next()) {
+              String nombre = rs.getString("nombre");
+              RangoNinja rango = RangoNinja.valueOf(rs.getString("rango").toUpperCase());
+              String aldea = rs.getString("aldea");
+              ninja = new Ninja(id, nombre, rango, aldea);
           }
-      } catch (SQLException e) {
+      } catch (SQLException | IllegalArgumentException e) {
           e.printStackTrace();
+      } finally {
+          ConexionBD.cerrarConexion(conexion, ps, rs);
       }
   
       return ninja;
   }
   
-  public List<Mision> obtenerMisionesDisponiblesParaNinja(int idNinja) {
-    List<Mision> misionesDisponibles = new ArrayList<>();
-    Ninja ninja = obtenerNinjaPorId(idNinja);
-
-    if (ninja != null) {
-        RangoNinja rangoNinja = ninja.getRango();
-
-        for (Mision mision : misiones) {
-            if (esRangoSuficiente(rangoNinja, mision.getRango())) {
-                misionesDisponibles.add(mision);
-            }
-        }
-    }
-
-    return misionesDisponibles;
-}
-
-private boolean esRangoSuficiente(RangoNinja rangoNinja, RangoMision rangoMision) {
-    int nivelRangoNinja = obtenerNivelRango(rangoNinja);
-    int nivelRangoMision = obtenerNivelRango(rangoMision);
-
-    return nivelRangoNinja >= nivelRangoMision;
-}
-
-private int obtenerNivelRango(RangoNinja rango) {
-    switch (rango) {
-        case A:
-            return 3;
-        case B:
-            return 2;
-        case C:
-            return 1;
-        default:
-            return 0;
-    }
-}
-
-private int obtenerNivelRango(RangoMision rango) {
-    switch (rango) {
-        case A:
-            return 3;
-        case B:
-            return 2;
-        case C:
-            return 1;
-        default:
-            return 0;
-    }
-}
-
   }
   

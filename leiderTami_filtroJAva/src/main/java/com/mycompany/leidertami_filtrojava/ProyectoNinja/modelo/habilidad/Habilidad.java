@@ -12,9 +12,13 @@ public class Habilidad {
         this.descripcion = descripcion;
     }
 
-
-
-   
+    public Habilidad() {
+    }
+    
+    public Habilidad(String nombre, String descripcion) {
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+    }
     public int getIdNinja() {
         return idNinja; 
 

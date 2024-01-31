@@ -1,14 +1,14 @@
-
 package com.mycompany.leidertami_filtrojava.ProyectoNinja.modelo.misionNinja;
 
+import java.sql.Timestamp;
 
 public class MisionNinja {
     private int idNinja;
     private int idMision;
-    private String fechaInicio;
-    private String fechaFin;
+    private Timestamp fechaInicio;
+    private Timestamp fechaFin;
 
-    public MisionNinja(int idNinja, int idMision, String fechaInicio, String fechaFin) {
+    public MisionNinja(int idNinja, int idMision, Timestamp fechaInicio, Timestamp fechaFin) {
         this.idNinja = idNinja;
         this.idMision = idMision;
         this.fechaInicio = fechaInicio;
@@ -31,26 +31,25 @@ public class MisionNinja {
         this.idMision = idMision;
     }
 
-    public String getFechaInicio() {
+    public Timestamp getFechaInicio() {
         return fechaInicio;
     }
 
-    public void setFechaInicio(String fechaInicio) {
+    public void setFechaInicio(Timestamp fechaInicio) {
         this.fechaInicio = fechaInicio;
     }
 
-    public String getFechaFin() {
+    public Timestamp getFechaFin() {
         return fechaFin;
     }
 
-    public void setFechaFin(String fechaFin) {
+    public void setFechaFin(Timestamp fechaFin) {
         this.fechaFin = fechaFin;
     }
 
     @Override
     public String toString() {
-        return "MisionNinja{" + "idNinja=" + idNinja + ", idMision=" + idMision + ", fechaInicio=" + fechaInicio + ", fechaFin=" + fechaFin + '}';
+        return "MisionNinja{" + "idNinja=" + idNinja + ", idMision=" + idMision +
+                ", fechaInicio=" + fechaInicio + ", fechaFin=" + fechaFin + '}';
     }
-    
-    
 }

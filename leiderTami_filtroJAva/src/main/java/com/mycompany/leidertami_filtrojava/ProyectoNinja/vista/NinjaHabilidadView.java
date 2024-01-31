@@ -27,20 +27,17 @@ public class NinjaHabilidadView {
         });
     }
 
-    public void mostrarMisionesDisponiblesParaNinja(int idNinja) {
-        List<Mision> misionesDisponibles = misionDAO.obtenerMisionesDisponiblesParaNinja(idNinja);
-
-        if (!misionesDisponibles.isEmpty()) {
+    public void mostrarMisionesDisponiblesParaNinja(String rango, List<Mision> misiones) {
+        if (!misiones.isEmpty()) { 
             System.out.println("Misiones disponibles para el ninja:");
-            for (Mision mision : misionesDisponibles) {
-                System.out.println("- ID Mision: " + mision.getId() +
-                        ", Descripción: " + mision.getDescripcion() +
-                        ", Fecha Inicio: " + mision.getFechaInicio() +
-                        ", Fecha Fin: " + mision.getFechaFin() +
-                        ", Rango: " + mision.getRango());
-            }
-        } else {
+            misiones.forEach(mision -> System.out.println("- ID Mision: " + mision.getId() + 
+                    ", Descripción: " + mision.getDescripcion() +
+                    ", Rango: " + mision.getRango().name())); 
+        } else { 
             System.out.println("El ninja no tiene misiones disponibles en este momento.");
         }
     }
+    
+    
+    
 }

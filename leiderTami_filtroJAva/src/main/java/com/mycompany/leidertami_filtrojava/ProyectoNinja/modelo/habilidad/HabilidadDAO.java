@@ -1,5 +1,6 @@
 package com.mycompany.leidertami_filtrojava.ProyectoNinja.modelo.habilidad;
 
+import java.sql.Statement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,17 +9,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mycompany.leidertami_filtrojava.ProyectoNinja.modelo.ConexionBD;
+
 public class HabilidadDAO {
-     public void crearHabilidad(Habilidad habilidad) {
+
+    public void crearHabilidad(Habilidad habilidad) {
         Connection conexion = ConexionBD.getConexion();
         PreparedStatement ps = null;
-        String sql = "INSERT INTO habilidad (idNinja, nombre, descripcion) VALUES (?, ?, ?)";
+        // Quitar el campo idNinja de la sentencia SQL
+        String sql = "INSERT INTO habilidad (nombre, descripcion) VALUES (?, ?)";
         try {
-            ps = conexion.prepareStatement(sql);
-            ps.setInt(1, habilidad.getIdNinja());
-            ps.setString(2, habilidad.getNombre());
-            ps.setString(3, habilidad.getDescripcion());
+            // Usar la clase Statement y su constante RETURN_GENERATED_KEYS
+            ps = conexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            // Quitar el parámetro idNinja del PreparedStatement
+            ps.setString(1, habilidad.getNombre());
+            ps.setString(2, habilidad.getDescripcion());
             ps.executeUpdate();
+            // Obtener el id autogenerado del ResultSet
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                int idGenerado = rs.getInt(1);
+                // Cambiar el nombre del método a setIdNinja
+                habilidad.setIdNinja(idGenerado);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
